@@ -52,10 +52,12 @@ const start = () => {
             switch (answer.bigListChoice) {
                 case "View All Employees":
                     // TODO: show all employees
+                    showEmployees();
                     break;
                 case "View All Employees by Department":
                     // TODO: prompt for which department - Engineering, Finance, Legal, Sales
                     // TODO: show chart for selected department
+                    viewByDepartment();
                     break;
                 case "View All Employees by Manager":
                     // TODO: prompt to choose manager, lists all managers
@@ -86,11 +88,38 @@ const addEmployee = () => {
     inquirer
         .prompt(addEmployeeQs)
         .then((answer) => {
+            switch (answer.employeeRole) {
+                case "Sales Lead" :
+                    var roleID = 1;
+                    break;
+                case "Salesperson":
+                    var roleID = 2;
+                    break;
+                case "Lead Engineer":
+                    var roleID = 3;
+                    break;
+                case "Software Engineer":
+                    var roleID = 4;
+                    break;
+                case "Account Manager":
+                    var roleID = 5;
+                    break;
+                case "Accountant":
+                    var roleID = 6;
+                    break;
+                case "Legal Team Lead":
+                    var roleID = 7;
+                    break;
+                default:
+                    var roleID = 0;
+
+            }
             connection.query(
                 `INSERT INTO employee SET ?`,
                 {
                     first_name: answer.employeeFirst,
                     last_name: answer.employeeLast,
+                    role_id: roleID,
                 },
                 (err) => {
                     if (err) throw err;
@@ -99,6 +128,30 @@ const addEmployee = () => {
                     start();
                 }
             );
+        })
+};
+
+const showEmployees = () => {
+    connection.query(
+        `SELECT * FROM employee`, function(err,result){
+            if (err) throw err;
+            console.table(result);
+            start();
+        }
+    )
+};
+
+const viewByDepartment = () => {
+    inquirer
+        .prompt({
+            
+            type: "list",
+            message: "Which department would you like to search by?",
+            name:"searchDept",
+            choices:["Engineering", "Finance", "Legal", "Sales"]
+        })
+        .then((answer) => {
+            
         })
 };
 
