@@ -65,12 +65,11 @@ const start = () => {
                     addEmployee();
                     break;
                 case "Remove Employee":
-                    // TODO: prompt list of all employees, chosen one gets removed
-                    // console log (EMployee removed)
                     removeEmployee();
                     break;
                 case "Update Employee Role":
                     // TODO: something
+                    updateEmpRole();
                     break;
                 case "Update Employee Manager":
                     // TODO: something
@@ -172,7 +171,7 @@ const viewByDepartment = () => {
 };
 
 const removeEmployee = () => {
-    connection.query(`SELECT * FROM employee`, (err, result) => {
+    connection.query(`SELECT * FROM employee;`, (err, result) => {
         if(err) throw err;
         inquirer.prompt([
             {
@@ -198,17 +197,83 @@ const removeEmployee = () => {
             });
 
             connection.query(
-                `DELETE FROM employee WHERE first_name = "${answer.removeEmp}"`, function(err, result) {
+                `DELETE FROM employee WHERE first_name = "${answer.removeEmp}";`, function(err, result) {
                  if (err) throw (err);
                  console.log("Employee has been deleted!")
                  start();
             })
-            
-
         })
     })
 };
 
+const updateEmpRole = () => {
+    connection.query(`SELECT * FROM employee;`, (err, result) => {
+        if(err) throw err;
+        inquirer.prompt([
+            {
+                type:"rawlist",
+                name:"choice",
+                choices() {
+                    const empArray = [];
+                    result.forEach(({first_name}) => {
+                        empArray.push(first_name);
+                    });
+                    return empArray;
+                },
+                message:"Which employee would you like to update?",
+            },
+            {
+                type: "list",
+                name:"roleChoice",
+                choices: ["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
+                message: "What role would you like to update them to?"
+            }
+        ])
+        .then((answer) => {
+            let chosenEmp;
+
+            result.forEach((item) => {
+                if(item.first_name === answer.choice) {
+                    chosenEmp = item;
+                }
+            });
+
+            switch (answer.roleChoice) {
+                case "Sales Lead" :
+                    var role2ID = 1;
+                    break;
+                case "Salesperson":
+                    var role2ID = 2;
+                    break;
+                case "Lead Engineer":
+                    var role2ID = 3;
+                    break;
+                case "Software Engineer":
+                    var role2ID = 4;
+                    break;
+                case "Account Manager":
+                    var role2ID = 5;
+                    break;
+                case "Accountant":
+                    var role2ID = 6;
+                    break;
+                case "Legal Team Lead":
+                    var role2ID = 7;
+                    break;
+                default:
+                    var role2ID = 0;
+            }
+            
+            connection.query(
+                `UPDATE employee SET role_id = "${role2ID}" WHERE first_name = "${answer.choice}";`, function(err, result) {
+                 if (err) throw (err);
+                 console.log("Employee has been updated!")
+                 start();
+            })
+        })
+
+    })
+}
 
 connection.connect((err) => {
     if (err) throw err;
