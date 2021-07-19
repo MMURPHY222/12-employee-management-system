@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
+const { restoreDefaultPrompts } = require('inquirer');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -35,7 +36,7 @@ addEmployeeQs = [
         type: "list",
         message: "What is the employee's role?",
         name:"employeeRole",
-        choices:["Sales lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
+        choices:["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
     },
     // {
     //     type: "list",
@@ -51,12 +52,9 @@ const start = () => {
         .then((answer) => {
             switch (answer.bigListChoice) {
                 case "View All Employees":
-                    // TODO: show all employees
                     showEmployees();
                     break;
                 case "View All Employees by Department":
-                    // TODO: prompt for which department - Engineering, Finance, Legal, Sales
-                    // TODO: show chart for selected department
                     viewByDepartment();
                     break;
                 case "View All Employees by Manager":
@@ -69,6 +67,7 @@ const start = () => {
                 case "Remove Employee":
                     // TODO: prompt list of all employees, chosen one gets removed
                     // console log (EMployee removed)
+                    removeEmployee();
                     break;
                 case "Update Employee Role":
                     // TODO: something
@@ -77,6 +76,7 @@ const start = () => {
                     // TODO: something
                     break;
                 default:
+                    console.log("BYE BYE");
                     connection.end();
             }
         }
@@ -171,6 +171,43 @@ const viewByDepartment = () => {
         })
 };
 
+const removeEmployee = () => {
+    connection.query(`SELECT * FROM employee`, (err, result) => {
+        if(err) throw err;
+        inquirer.prompt([
+            {
+                type:"rawlist",
+                name:"choice",
+                choices() {
+                    const empArray = [];
+                    result.forEach(({first_name}) => {
+                        empArray.push(first_name);
+                    });
+                    return empArray;
+                },
+                message:"Which employee would you like to remove?",
+            },
+        ])
+        .then((answer) => {
+            let chosenEmp;
+
+            result.forEach((item) => {
+                if(item.first_name === answer.choice) {
+                    chosenEmp = item;
+                }
+            });
+
+            connection.query(
+                `DELETE FROM employee WHERE first_name = "${answer.removeEmp}"`, function(err, result) {
+                 if (err) throw (err);
+                 console.log("Employee has been deleted!")
+                 start();
+            })
+            
+
+        })
+    })
+};
 
 
 connection.connect((err) => {
