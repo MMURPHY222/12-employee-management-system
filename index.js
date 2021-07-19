@@ -133,7 +133,10 @@ const addEmployee = () => {
 
 const showEmployees = () => {
     connection.query(
-        `SELECT * FROM employee`, function(err,result){
+        `SELECT first_name, last_name, manager_id, title, salary, departmentID
+         FROM employee
+         INNER JOIN role
+         ON employee.role_id = role.id`, function(err,result){
             if (err) throw err;
             console.table(result);
             start();
