@@ -16,8 +16,8 @@ bigList = [
         type: 'list',
         message: 'What would you like to do?',
         name: 'bigListChoice',
-        choices: ["View All Employees", "View All Employees by Department", "View All Employees by Manager", 
-        "Add Employee", "Remove Employee", "Update Employee Role", "Update Employee Manager", "Quit"]
+        choices: ["View All Employees", "View All Employees by Department", "View All Departments", "View All Employees by Manager", 
+        "Add Employee", "Add Department", "Remove Employee", "Update Employee Role", "Update Employee Manager", "Quit"]
     }
 ];
 
@@ -65,7 +65,6 @@ const start = () => {
                     addEmployee();
                     break;
                 case "Remove Employee":
-                    // TODO: fix this
                     removeEmployee();
                     break;
                 case "Update Employee Role":
@@ -74,6 +73,12 @@ const start = () => {
                 case "Update Employee Manager":
                     // TODO: something
                     break;
+                case "Add Department":
+                    addDepartment();
+                    break;
+                case "View All Departments":
+                    viewDepartments();
+                    break;
                 default:
                     console.log("BYE BYE");
                     connection.end();
@@ -81,6 +86,41 @@ const start = () => {
         }
         
         );
+};
+
+const addDepartment = () => {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the name of the department you would like to add?",
+                name: "deptName"
+            }
+        ])
+        .then((answer) => {
+            connection.query(
+                `INSERT INTO department SET ?`,
+                {
+                    name: answer.deptName,
+                },
+                (err)  => {
+                    if (err) throw err;
+                    console.log('Department Created');
+                    // re-prompt the user 
+                    start();
+                }
+            )
+        })
+};
+
+const viewDepartments = () => {
+    connection.query(
+        `SELECT * FROM department`, function(err, result) {
+            if (err) throw err;
+            console.table(result);
+            start();
+        }
+    )
 };
 
 const addEmployee = () => {
