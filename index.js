@@ -65,10 +65,10 @@ const start = () => {
                     addEmployee();
                     break;
                 case "Remove Employee":
+                    // TODO: fix this
                     removeEmployee();
                     break;
                 case "Update Employee Role":
-                    // TODO: something
                     updateEmpRole();
                     break;
                 case "Update Employee Manager":
@@ -192,12 +192,12 @@ const removeEmployee = () => {
 
             result.forEach((item) => {
                 if(item.first_name === answer.choice) {
-                    chosenEmp = item;
+                    chosenEmp = item.id;
                 }
             });
 
             connection.query(
-                `DELETE FROM employee WHERE first_name = "${answer.removeEmp}";`, function(err, result) {
+                `DELETE FROM employee WHERE id = ${chosenEmp};`, function(err, result) {
                  if (err) throw (err);
                  console.log("Employee has been deleted!")
                  start();
