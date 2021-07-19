@@ -154,7 +154,20 @@ const viewByDepartment = () => {
             choices:["Engineering", "Finance", "Legal", "Sales"]
         })
         .then((answer) => {
+            connection.query(
+                `SELECT first_name, last_name, title, salary, name
+                 FROM employee
+                 JOIN role
+                 ON employee.role_id = role.id
+                 JOIN department 
+                 ON role.departmentID = department.id
+                 WHERE department.name = "${answer.searchDept}";`, function(err, result) {
+                     if (err) throw (err);
+                     console.table(result);
+                     start();
+                 }
             
+            )
         })
 };
 
