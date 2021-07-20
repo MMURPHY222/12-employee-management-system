@@ -21,30 +21,30 @@ bigList = [
     }
 ];
 
-addEmployeeQs = [
-    {
-        type: "input",
-        message: "What is the employee's first name?",
-        name:"employeeFirst"
-    },
-    {
-        type: "input",
-        message: "What is the employee's last name?",
-        name:"employeeLast"
-    },
-    {
-        type: "list",
-        message: "What is the employee's role?",
-        name:"employeeRole",
-        choices:["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
-    },
-    // {
-    //     type: "list",
-    //     message: "Who is the employee's manager?",
-    //     name:"employeeManager",
-    //     choices:["lists all managers"],
-    // },
-];
+// addEmployeeQs = [
+//     {
+//         type: "input",
+//         message: "What is the employee's first name?",
+//         name:"employeeFirst"
+//     },
+//     {
+//         type: "input",
+//         message: "What is the employee's last name?",
+//         name:"employeeLast"
+//     },
+//     {
+//         type: "list",
+//         message: "What is the employee's role?",
+//         name:"employeeRole",
+//         choices:["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
+//     },
+//     // {
+//     //     type: "list",
+//     //     message: "Who is the employee's manager?",
+//     //     name:"employeeManager",
+//     //     choices:["lists all managers"],
+//     // },
+// ];
 
 const start = () => {
     inquirer
@@ -193,41 +193,54 @@ const viewDepartments = () => {
 };
 
 const addEmployee = () => {
+    connection.query('SELECT * FROM role', (err, result) => { 
+        if(err) throw err; 
     inquirer
-        .prompt(addEmployeeQs)
-        .then((answer) => {
-            switch (answer.employeeRole) {
-                case "Sales Lead" :
-                    var roleID = 1;
-                    break;
-                case "Salesperson":
-                    var roleID = 2;
-                    break;
-                case "Lead Engineer":
-                    var roleID = 3;
-                    break;
-                case "Software Engineer":
-                    var roleID = 4;
-                    break;
-                case "Account Manager":
-                    var roleID = 5;
-                    break;
-                case "Accountant":
-                    var roleID = 6;
-                    break;
-                case "Legal Team Lead":
-                    var roleID = 7;
-                    break;
-                default:
-                    var roleID = 0;
+        .prompt([
+            {
+                type: "input",
+                message: "What is the employee's first name?",
+                name:"employeeFirst"
+            },
+            {
+                type: "input",
+                message: "What is the employee's last name?",
+                name:"employeeLast"
+            },
+            {
+                type: "list",
+                name:"roleChoice",
+                choices() {
+                    const roleArray = [];
+                    result.forEach(({title}) => {
+                        roleArray.push(title);
+                    })
+                    return roleArray;
+                },
+                message: "What role would you like them to have?"
+            },
+            // {
+            //     type: "list",
+            //     message: "Who is the employee's manager?",
+            //     name:"employeeManager",
+            //     choices:["lists all managers"],
+            // },
 
-            }
+        ])
+        .then((answer) => {
+            let chosenRole;
+
+            result.forEach((item) => {
+                if(item.title === answer.roleChoice) {
+                    chosenRole = item.id;
+                }
+            });
             connection.query(
                 `INSERT INTO employee SET ?`,
                 {
                     first_name: answer.employeeFirst,
                     last_name: answer.employeeLast,
-                    role_id: roleID,
+                    role_id: chosenRole,
                 },
                 (err) => {
                     if (err) throw err;
@@ -237,6 +250,8 @@ const addEmployee = () => {
                 }
             );
         })
+
+    })
 };
 
 const showEmployees = () => {
@@ -363,7 +378,7 @@ const updateEmpRole = () => {
                     chosenEmp = item.id;
                 }
             });
-            
+
             connection.query(
                 `UPDATE employee SET role_id = "${chosenEmp}" WHERE first_name = "${answer.choice}";`, function(err, result) {
                  if (err) throw (err);
