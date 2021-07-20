@@ -113,6 +113,11 @@ const addRole = () => {
                 name: "roleName"
             },
             {
+                type: "input",
+                message: "What is the salary?",
+                name: "newRoleSalary"
+            },
+            {
                 type: "rawlist",
                 message: "Which department would you like you role to be within?",
                 name: "roleDept",
@@ -127,7 +132,27 @@ const addRole = () => {
             }
         ])
         .then((answer) => {
-            console.log(answer);
+            let chosenDept;
+            result.forEach((item) => {
+                if(item.name === answer.roleDept) {
+                    chosenDept = item.id;
+                }
+            });
+
+            connection.query(
+                `INSERT INTO role SET ?`,
+                {
+                    title: answer.roleName,
+                    salary: answer.newRoleSalary,
+                    departmentID: chosenDept,
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log('Role Created!');
+                    // re-prompt the user 
+                    start();
+                }
+            );
         })
     })
 }
@@ -320,7 +345,6 @@ const updateEmpRole = () => {
             {
                 type: "list",
                 name:"roleChoice",
-                // TODO: dynamically make roleChoice
                 choices() {
                     const roleArray = [];
                     result2.forEach(({title}) => {
