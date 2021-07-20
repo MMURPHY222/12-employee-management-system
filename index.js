@@ -16,35 +16,10 @@ bigList = [
         type: 'list',
         message: 'What would you like to do?',
         name: 'bigListChoice',
-        choices: ["View All Employees", "View All Employees by Department", "View All Departments", "View All Roles", "View All Employees by Manager", 
-        "Add Employee", "Add Department", "Add Role", "Remove Employee", "Update Employee Role", "Update Employee Manager", "Quit"]
+        choices: ["View All Employees", "View All Employees by Department", "View All Departments", "View All Roles", 
+        "Add Employee", "Add Department", "Add Role", "Remove Employee", "Update Employee Role", "Quit"]
     }
 ];
-
-// addEmployeeQs = [
-//     {
-//         type: "input",
-//         message: "What is the employee's first name?",
-//         name:"employeeFirst"
-//     },
-//     {
-//         type: "input",
-//         message: "What is the employee's last name?",
-//         name:"employeeLast"
-//     },
-//     {
-//         type: "list",
-//         message: "What is the employee's role?",
-//         name:"employeeRole",
-//         choices:["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
-//     },
-//     // {
-//     //     type: "list",
-//     //     message: "Who is the employee's manager?",
-//     //     name:"employeeManager",
-//     //     choices:["lists all managers"],
-//     // },
-// ];
 
 const start = () => {
     inquirer
@@ -57,10 +32,6 @@ const start = () => {
                 case "View All Employees by Department":
                     viewByDepartment();
                     break;
-                case "View All Employees by Manager":
-                    // TODO: prompt to choose manager, lists all managers
-                    // TODO: chart of returned employees with chosen manager
-                    break;
                 case "Add Employee":
                     addEmployee();
                     break;
@@ -69,9 +40,6 @@ const start = () => {
                     break;
                 case "Update Employee Role":
                     updateEmpRole();
-                    break;
-                case "Update Employee Manager":
-                    // TODO: something
                     break;
                 case "Add Department":
                     addDepartment();
@@ -219,13 +187,6 @@ const addEmployee = () => {
                 },
                 message: "What role would you like them to have?"
             },
-            // {
-            //     type: "list",
-            //     message: "Who is the employee's manager?",
-            //     name:"employeeManager",
-            //     choices:["lists all managers"],
-            // },
-
         ])
         .then((answer) => {
             let chosenRole;

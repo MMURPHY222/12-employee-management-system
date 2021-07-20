@@ -14,6 +14,10 @@ So that I can organize and plan my business
 This app allows users to manage their employee database through the terminal. They are able to add employee's, roles, and departments. While also viewing all employees, roles, and departments. There is also functionality to update employee roles, and delete employees. 
 ```
 
+## Link to video
+
+https://drive.google.com/file/d/11sJPkO-KQbAg57X74AUkBYp6EplWSlMv/view
+
 ## Usage
 
 ```
