@@ -358,40 +358,14 @@ const updateEmpRole = () => {
         .then((answer) => {
             let chosenEmp;
 
-            result.forEach((item) => {
-                if(item.first_name === answer.choice) {
-                    chosenEmp = item;
+            result2.forEach((item) => {
+                if(item.title === answer.roleChoice) {
+                    chosenEmp = item.id;
                 }
             });
-
-            switch (answer.roleChoice) {
-                case "Sales Lead" :
-                    var role2ID = 1;
-                    break;
-                case "Salesperson":
-                    var role2ID = 2;
-                    break;
-                case "Lead Engineer":
-                    var role2ID = 3;
-                    break;
-                case "Software Engineer":
-                    var role2ID = 4;
-                    break;
-                case "Account Manager":
-                    var role2ID = 5;
-                    break;
-                case "Accountant":
-                    var role2ID = 6;
-                    break;
-                case "Legal Team Lead":
-                    var role2ID = 7;
-                    break;
-                default:
-                    var role2ID = 0;
-            }
             
             connection.query(
-                `UPDATE employee SET role_id = "${role2ID}" WHERE first_name = "${answer.choice}";`, function(err, result) {
+                `UPDATE employee SET role_id = "${chosenEmp}" WHERE first_name = "${answer.choice}";`, function(err, result) {
                  if (err) throw (err);
                  console.log("Employee has been updated!")
                  start();
