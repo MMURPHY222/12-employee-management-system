@@ -228,30 +228,39 @@ const showEmployees = () => {
 };
 
 const viewByDepartment = () => {
-    inquirer
-        .prompt({
-            
-            type: "list",
-            message: "Which department would you like to search by?",
-            name:"searchDept",
-            choices:["Engineering", "Finance", "Legal", "Sales"]
-        })
-        .then((answer) => {
-            connection.query(
-                `SELECT first_name, last_name, title, salary, name
-                 FROM employee
-                 JOIN role
-                 ON employee.role_id = role.id
-                 JOIN department 
-                 ON role.departmentID = department.id
-                 WHERE department.name = "${answer.searchDept}";`, function(err, result) {
-                     if (err) throw (err);
-                     console.table(result);
-                     start();
-                 }
-            
-            )
-        })
+    connection.query(`SELECT * FROM department`, (err, result) => {
+        if(err) throw err;
+        inquirer
+            .prompt({
+                
+                type: "list",
+                message: "Which department would you like to search by?",
+                name:"searchDept",
+                choices() {
+                    const dept2Array = [];
+                    result.forEach(({name}) => {
+                        dept2Array.push(name);
+                    });
+                    return dept2Array;
+                }
+            })
+            .then((answer) => {
+                connection.query(
+                    `SELECT first_name, last_name, title, salary, name
+                     FROM employee
+                     JOIN role
+                     ON employee.role_id = role.id
+                     JOIN department 
+                     ON role.departmentID = department.id
+                     WHERE department.name = "${answer.searchDept}";`, function(err, result) {
+                         if (err) throw (err);
+                         console.table(result);
+                         start();
+                     }
+                
+                )
+            })
+    })
 };
 
 const removeEmployee = () => {
@@ -292,7 +301,9 @@ const removeEmployee = () => {
 
 const updateEmpRole = () => {
     connection.query(`SELECT * FROM employee;`, (err, result) => {
+        connection.query('SELECT * FROM role', (err2, result2) => { 
         if(err) throw err;
+        if(err2) throw err2;
         inquirer.prompt([
             {
                 type:"rawlist",
@@ -309,7 +320,14 @@ const updateEmpRole = () => {
             {
                 type: "list",
                 name:"roleChoice",
-                choices: ["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Account Manager", "Accountant", "Legal Team Lead"],
+                // TODO: dynamically make roleChoice
+                choices() {
+                    const roleArray = [];
+                    result2.forEach(({title}) => {
+                        roleArray.push(title);
+                    })
+                    return roleArray;
+                },
                 message: "What role would you like to update them to?"
             }
         ])
@@ -355,7 +373,7 @@ const updateEmpRole = () => {
                  start();
             })
         })
-
+    })
     })
 }
 
