@@ -16,8 +16,8 @@ bigList = [
         type: 'list',
         message: 'What would you like to do?',
         name: 'bigListChoice',
-        choices: ["View All Employees", "View All Employees by Department", "View All Departments", "View All Employees by Manager", 
-        "Add Employee", "Add Department", "Remove Employee", "Update Employee Role", "Update Employee Manager", "Quit"]
+        choices: ["View All Employees", "View All Employees by Department", "View All Departments", "View All Roles", "View All Employees by Manager", 
+        "Add Employee", "Add Department", "Add Role", "Remove Employee", "Update Employee Role", "Update Employee Manager", "Quit"]
     }
 ];
 
@@ -79,6 +79,12 @@ const start = () => {
                 case "View All Departments":
                     viewDepartments();
                     break;
+                case "Add Role":
+                    addRole();
+                    break;
+                case "View All Roles":
+                    viewRoles();
+                    break;
                 default:
                     console.log("BYE BYE");
                     connection.end();
@@ -87,6 +93,36 @@ const start = () => {
         
         );
 };
+
+const addRole = () => {
+    connection.query(`SELECT * FROM department`, (err, result) => {
+
+        inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the name of the role you would like to add?",
+                name: "roleName"
+            },
+            {
+                type: "rawlist",
+                message: "Which department would you like you role to be within?",
+                name: "roleDept",
+                choices() {
+                    const deptArray = [];
+                    result.forEach(({name}) => {
+                        deptArray.push(name);
+                    })
+                
+                    return deptArray;
+                }
+            }
+        ])
+        .then((answer) => {
+            console.log(answer);
+        })
+    })
+}
 
 const addDepartment = () => {
     inquirer
