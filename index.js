@@ -94,6 +94,14 @@ const start = () => {
         );
 };
 
+const viewRoles = () => {
+    connection.query(`SELECT * FROM role`, function (err, result) {
+        if(err) throw err;
+        console.table(result);
+        start();
+    })
+};
+
 const addRole = () => {
     connection.query(`SELECT * FROM department`, (err, result) => {
 
